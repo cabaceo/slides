@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shiny</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Shiny',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                      },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Binqi Ye and Harry Hua, prepared by Guangming Lang at Cabaceo LLC' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="shiny-training_files/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="shiny-training_files/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="shiny-training_files/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="shiny-training_files/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="shiny-training_files/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="shiny-training_files/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="shiny-training_files/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="shiny-training_files/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="shiny-training_files/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="shiny-training_files/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides>
+
+  <slide class="title-slide segue nobackground">
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+          </hgroup>
+  </slide>
+
+<slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Overview</h2></hgroup><article  id="overview">
+
+</article></slide><slide class=''><hgroup><h2>Goals</h2></hgroup><article  id="goals">
+
+<h3>You will learn:</h3>
+
+<ul>
+<li>Shiny Fundamentals</li>
+<li>Reactive Programming</li>
+<li>Shiny Modules</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Outline</h2></hgroup><article  id="outline">
+
+<ul>
+<li>Hour 0.5: intro, usecases and setup.</li>
+<li>Hour 1.5: shiny fundamentals (UI &amp; server, input &amp; output, and themes).</li>
+<li>Hour 3 : modules (code re-use).</li>
+<li>Hour 4 : reactive programming (the most important thing).</li>
+</ul>
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Intro</h2></hgroup><article  id="intro">
+
+</article></slide><slide class=''><hgroup><h2>What?</h2></hgroup><article  id="what">
+
+<ul>
+<li>Shiny allows you to rapidly build web apps using R.</li>
+<li><a href='https://www.shinyapps.io' title=''>Shinyapps.io</a> allows you to easily deploy these apps.</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Who?</h2></hgroup><article  id="who">
+
+<ul>
+<li>Biostatisticians</li>
+<li>Statisticians</li>
+<li>Data scientists</li>
+<li>R programmers</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Why?</h2></hgroup><article  id="why">
+
+<ul>
+<li>Improve productivity. (Shiny allows you and your team to re-run calculation procedures by clicking buttons instead of running R scripts. It&#39;s easier to share an URL than a bunch of R files.)</li>
+<li>Let non-technical people use your models without knowing R.</li>
+<li>Tell your data stories to the world. (Shiny supports powerful visualizations. Most shiny apps you make are mobile friendly by default.)</li>
+<li>Build minimum viable products.</li>
+<li>New career as Shiny developers.</li>
+<li>Not hard &amp; fun.</li>
+</ul>
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Demo</h2></hgroup><article  id="demo">
+
+</article></slide><slide class=''><hgroup><h2>Simple Examples</h2></hgroup><article  id="simple-examples">
+
+<ol>
+<li><p>Interactive plots. For example, a <a href='https://cabaceo.com/berkshire-vs-sp500/' title=''>bar chart</a> that shows the actual values when you mouse over the bars. A <a href='https://cabaceo.com/shiller-pe/' title=''>timeseries plot</a> that changes as you select different periods.</p></li>
+<li><p>Turn your ideas into reality. For example, this <a href='https://942kid.shinyapps.io/douban_explorer/' title=''>app</a> allows you to look up a user&#39;s most recent readings on Douban (豆瓣). Notice you can also embed google ads in the app. This <a href='https://cabaceo.shinyapps.io/tabelog-en/' title=''>app</a> provides a cleaner interface to search restaurants on Tabelog in English.</p></li>
+<li><p>Embed data analysis in your blog post so that readers can play with the results. <a href='https://uasnap.shinyapps.io/ex_leaflet/' title=''>Example</a>.</p></li>
+</ol>
+
+</article></slide><slide class=''><hgroup><h2>Complex Examples</h2></hgroup><article  id="complex-examples">
+
+<ol>
+<li><p>Super easy to run calculations under different scenarios or statistical procedures with different input parameters. For example, <a href='https://gmlang.shinyapps.io/SSCRC/' title=''>calculate sample sizes in multi-regional clinical trials</a>.</p></li>
+<li><p>Train and backtest various models, compare results and generate reports. For example, here&#39;s an <a href='http://hdnom.io' title=''>app</a> that does all of that for survival models.</p></li>
+<li><p>You can build an entire product/SaaS platform using Shiny. <a href='https://newsroom.ly' title=''>Example</a>.</p></li>
+<li><p><a href='https://shiny.rstudio.com/gallery/' title=''>More</a> <a href='https://www.showmeshiny.com' title=''>examples</a>.</p></li>
+</ol>
+
+</article></slide><slide class=''><hgroup><h2>What again?</h2></hgroup><article  id="what-again">
+
+<p>Shiny = statistical (R) programming + web technologies.</p>
+
+<p>It allows statisticians who don&#39;t know web technologies to easily make and publish interactive web apps.</p>
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Setup</h2></hgroup><article  id="setup">
+
+</article></slide><slide class=''><hgroup><h2>Install Dev Tools</h2></hgroup><article  id="install-dev-tools">
+
+<ul>
+<li><a href='https://www.r-project.org' title=''>R</a></li>
+<li><a href='https://www.rstudio.com/products/rstudio/download/' title=''>Rstudio</a></li>
+<li>Web broswer (Safari, Chrome or Firefox)</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Install R packages</h2></hgroup><article  id="install-r-packages">
+
+<pre class = 'prettyprint lang-r'>pkgs = c(&quot;shiny&quot;, &quot;shinydashboard&quot;
+         # , &quot;plotly&quot;
+         )
+for (pkg in pkgs) {
+        if (!pkg %in% installed.packages()) {
+                cat(paste(pkg, &quot;missing, will attempt to install\n&quot;))
+                install.packages(pkg)
+        } else cat(paste(pkg, &quot;installed OK\n&quot;))
+}</pre>
+
+</article></slide><slide class=''><hgroup><h2>Hello, World!</h2></hgroup><article  id="hello-world">
+
+<pre class = 'prettyprint lang-r'>library(shiny)
+
+# make UI ---
+ui &lt;- fluidPage(
+        titlePanel(&quot;Hello World!&quot;)
+)
+
+# make server ---
+server &lt;- function(input, output) {}
+
+# make Shiny app ----
+shinyApp(ui = ui, server = server)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Self-introduction</h2></hgroup><article  id="self-introduction">
+
+<ul>
+<li>Add an input box to allow people to enter their names.</li>
+<li>Output one sentence to introduce people to the world.</li>
+</ul>
+
+<h3><strong>run examples/01-hello-world.R</strong></h3>
+
+</article></slide><slide class=''><hgroup><h2>Sidebar Layout</h2></hgroup><article  id="sidebar-layout">
+
+<h3><strong>run examples/01-hello-world-w-sidebar.R</strong></h3>
+
+</article></slide><slide class=''><hgroup><h2>Exercise Together</h2></hgroup><article  id="exercise-together">
+
+<ul>
+<li>Make a shiny app that draws a histogram of some made-up data, letting users specify the number of bins.</li>
+</ul>
+
+<h3><strong>open exercises/01-plot-histogram.R</strong></h3>
+
+</article></slide><slide class=''><hgroup><h2>Deploy a Shiny App</h2></hgroup><article  id="deploy-a-shiny-app">
+
+<h3><strong>Need to show Harry and Binqi how to do it.</strong> Delete this line afterwards.</h3>
+
+<h3>Sign up at <a href='http://www.shinyapps.io' title=''>shinyapps.io</a>.</h3>
+
+</article></slide><slide class=''><hgroup><h2>Basic structure of UI and server</h2></hgroup><article  id="basic-structure-of-ui-and-server">
+
+<h3>UI elements:</h3>
+
+<ul>
+<li>fluidPage()
+
+<ul>
+<li>sidebarLayout()
+
+<ul>
+<li>sidebarPanel()</li>
+<li>mainPanel()</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h3>server elements:</h3>
+
+<ul>
+<li>renderPlot()</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Inside UI</h2></hgroup><article  id="inside-ui">
+
+<h3>Input &amp; output elements:</h3>
+
+<ul>
+<li>textInput()</li>
+<li>sliderInput() # run ?sliderInput to learn how to use it</li>
+<li>plotOutput()</li>
+</ul>
+
+<p>By and large, put output elements inside of <strong>mainPanel()</strong>, and input elements inside of <strong>sidebarPanel()</strong>.</p>
+
+</article></slide><slide class=''><hgroup><h2>Exercise 1</h2></hgroup><article  id="exercise-1">
+
+<p>Make a shiny app that draws a scatter plot of Sepal.Length vs Sepal.Width in the iris data. This app should let user supply a title for the plot.</p>
+
+</article></slide><slide class=''><hgroup><h2>Exercise 2</h2></hgroup><article  id="exercise-2">
+
+<p>Add a histogram display of Petal.Length and a slider input that lets user choose the number of bins.</p>
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Modules</h2></hgroup><article  id="modules">
+
+</article></slide><slide class=''><hgroup><h2>Placeholder</h2></hgroup><article  id="placeholder">
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Reactive Programming</h2></hgroup><article  id="reactive-programming">
+
+</article></slide><slide class=''><hgroup><h2>What is Reactivity?</h2></hgroup><article  id="what-is-reactivity">
+
+<p>The Server keeps monitoring the UI. Whenever there is a change in the UI, the Server will follow some instructions (run some R code) accordingly and update the UI&#39;s display.</p>
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Where to go next?</h2></hgroup><article  id="where-to-go-next">
+
+</article></slide><slide class=''><hgroup><h2>Resources</h2></hgroup><article  id="resources">
+
+<ul>
+<li>Rstudio&#39;s guided <a href='https://shiny.rstudio.com/tutorial/' title=''>tutorial</a> for beginners.</li>
+<li>Rstudio&#39;s <a href='https://shiny.rstudio.com/articles/' title=''>articles</a>.</li>
+<li><a href='https://github.com/rstudio/shiny' title=''>Shiny github page</a>.</li>
+<li><a href='https://groups.google.com/forum/#!forum/shiny-discuss' title=''>Shiny Google group</a>.</li>
+<li><a href='https://github.com/rstudio/shiny-examples' title=''>&gt;100 shiny app examples with code</a>.</li>
+<li><a href='https://www.rstudio.com/resources/webinars/shiny-developer-conference/' title=''>Shiny developer conference videos 2016</a>.</li>
+</ul></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
