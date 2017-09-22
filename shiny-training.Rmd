@@ -1,0 +1,206 @@
+---
+author: "Binqi Ye and Harry Hua, prepared by Guangming Lang at Cabaceo LLC"
+title: Shiny 
+output: 
+  ioslides_presentation:
+    self_contained: no
+    incremental: false
+---
+
+# Overview
+
+## Goals 
+
+### You will learn:
+
+- Shiny Fundamentals
+- Reactive Programming
+- Shiny Modules
+
+## Outline
+
+- Hour 0.5: intro, usecases and setup.
+- Hour 1.5: shiny fundamentals (UI & server, input & output, and themes).
+- Hour 3  : reactive programming (the most important thing).
+- Hour 4  : modules (code re-use).
+
+
+# Intro
+
+## What?
+
+- Shiny allows you to rapidly build web apps using R.
+- [Shinyapps.io](https://www.shinyapps.io) allows you to easily deploy these apps.
+
+## Who? 
+
+- Biostatisticians
+- Statisticians
+- Data scientists
+- R programmers
+
+## Why? 
+
+- Improve productivity. (Shiny allows you and your team to re-run calculation procedures by clicking buttons instead of running R scripts. It's easier to share an URL than a bunch of R files.)
+- Let non-technical people use your models without knowing R. 
+- Tell your data stories to the world. (Shiny supports powerful visualizations. Most shiny apps you make are mobile friendly by default.)
+- Build minimum viable products.
+- New career as Shiny developers.
+- Not hard & fun.
+
+
+# Demo
+
+## Simple Examples
+
+1. Interactive plots. For example, a [bar chart](https://cabaceo.com/berkshire-vs-sp500/) that shows the actual values when you mouse over the bars. A [timeseries plot](https://cabaceo.com/shiller-pe/) that changes as you select different periods.
+
+2. Turn your ideas into reality. For example, this [app](https://942kid.shinyapps.io/douban_explorer/) allows you to look up a user's most recent readings on Douban (豆瓣). Notice you can also embed google ads in the app. This [app](https://cabaceo.shinyapps.io/tabelog-en/) provides a cleaner interface to search restaurants on Tabelog in English. 
+
+3. Embed data analysis in your blog post so that readers can play with the results. [Example](https://uasnap.shinyapps.io/ex_leaflet/).
+
+## Complex Examples
+
+1. Super easy to run calculations under different scenarios or statistical procedures with different input parameters. For example, [calculate sample sizes in multi-regional clinical trials](https://gmlang.shinyapps.io/SSCRC/).
+
+2. Train and backtest various models, compare results and generate reports. For example, here's an [app](http://hdnom.io) that does all of that for survival models.
+
+3. You can build an entire product/SaaS platform using Shiny. [Example](https://newsroom.ly).
+
+4. [More](https://shiny.rstudio.com/gallery/) [examples](https://www.showmeshiny.com).
+
+## What again?
+
+Shiny = statistical (R) programming + web technologies. 
+
+It allows statisticians who don't know web technologies to easily make and publish interactive web apps. 
+
+# Setup
+
+## Install Dev Tools
+
+- [R](https://www.r-project.org)
+- [Rstudio](https://www.rstudio.com/products/rstudio/download/)
+- Web broswer (Safari, Chrome or Firefox)
+
+## Install R packages
+
+```{r, eval=FALSE}
+pkgs = c("shiny", "shinydashboard"
+         # , "plotly"
+         )
+for (pkg in pkgs) {
+        if (!pkg %in% installed.packages()) {
+                cat(paste(pkg, "missing, will attempt to install\n"))
+                install.packages(pkg)
+        } else cat(paste(pkg, "installed OK\n"))
+}
+```
+
+## Hello, World!
+
+```{r, eval=FALSE}
+library(shiny)
+
+# make UI ---
+ui <- fluidPage(
+        titlePanel("Hello World!")
+)
+
+# make server ---
+server <- function(input, output) {}
+
+# make Shiny app ----
+shinyApp(ui = ui, server = server)
+```
+
+## Self-introduction
+
+- Add an input box to allow people to enter their names. 
+- Output one sentence to introduce people to the world.
+
+### **run examples/01-hello-world.R**
+
+## Sidebar Layout
+
+### **run examples/01-hello-world-w-sidebar.R**
+
+## Exercise 1
+
+- Make a shiny app that draws a histogram of some made-up data, letting users specify the number of bins.
+- Do it together.
+
+### **open exercises/01-plot-histogram.R**
+
+
+## Deploy a Shiny App
+
+### **Need to show Harry and Binqi how to do it.** Delete this line afterwards.
+
+### Sign up at [shinyapps.io](http://www.shinyapps.io).
+
+## Basic structure of UI and server
+
+### UI elements:
+- fluidPage()
+    - sidebarLayout()
+        - sidebarPanel()
+        - mainPanel()
+
+### server elements:
+- renderPlot()
+
+## Inside UI 
+
+### Input & output elements:
+- textInput()
+- sliderInput() # run ?sliderInput to learn how to use it
+- plotOutput()
+
+By and large, put output elements inside of **mainPanel()**, and input elements 
+inside of **sidebarPanel()**.
+
+## Exercise 2
+
+- Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.
+
+- 5 minutes
+
+## Exercise 3
+
+- Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title. 
+
+- 10 minutes
+ 
+
+
+
+
+
+
+
+
+
+# Reactive Programming
+
+## What is Reactivity?
+
+The Server keeps monitoring the UI. Whenever there is a change in the UI, the Server will follow some instructions (run some R code) accordingly and update the UI's display.
+
+
+# Modules
+
+## Placeholder
+
+
+
+# Where to go next?
+
+## Resources
+
+- Rstudio's guided [tutorial](https://shiny.rstudio.com/tutorial/) for beginners.
+- Rstudio's [articles](https://shiny.rstudio.com/articles/).
+- [Shiny github page](https://github.com/rstudio/shiny).
+- [Shiny Google group](https://groups.google.com/forum/#!forum/shiny-discuss).
+- [>100 shiny app examples with code](https://github.com/rstudio/shiny-examples).
+- [Shiny developer conference videos 2016](https://www.rstudio.com/resources/webinars/shiny-developer-conference/).

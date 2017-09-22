@@ -113,8 +113,8 @@
 <ul>
 <li>Hour 0.5: intro, usecases and setup.</li>
 <li>Hour 1.5: shiny fundamentals (UI &amp; server, input &amp; output, and themes).</li>
-<li>Hour 3 : modules (code re-use).</li>
-<li>Hour 4 : reactive programming (the most important thing).</li>
+<li>Hour 3 : reactive programming (the most important thing).</li>
+<li>Hour 4 : modules (code re-use).</li>
 </ul>
 
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Intro</h2></hgroup><article  id="intro">
@@ -221,10 +221,11 @@ shinyApp(ui = ui, server = server)</pre>
 
 <h3><strong>run examples/01-hello-world-w-sidebar.R</strong></h3>
 
-</article></slide><slide class=''><hgroup><h2>Exercise Together</h2></hgroup><article  id="exercise-together">
+</article></slide><slide class=''><hgroup><h2>Exercise 1</h2></hgroup><article  id="exercise-1">
 
 <ul>
 <li>Make a shiny app that draws a histogram of some made-up data, letting users specify the number of bins.</li>
+<li>Do it together.</li>
 </ul>
 
 <h3><strong>open exercises/01-plot-histogram.R</strong></h3>
@@ -270,23 +271,29 @@ shinyApp(ui = ui, server = server)</pre>
 
 <p>By and large, put output elements inside of <strong>mainPanel()</strong>, and input elements inside of <strong>sidebarPanel()</strong>.</p>
 
-</article></slide><slide class=''><hgroup><h2>Exercise 1</h2></hgroup><article  id="exercise-1">
-
-<p>Make a shiny app that draws a scatter plot of Sepal.Length vs Sepal.Width in the iris data. This app should let user supply a title for the plot.</p>
-
 </article></slide><slide class=''><hgroup><h2>Exercise 2</h2></hgroup><article  id="exercise-2">
 
-<p>Add a histogram display of Petal.Length and a slider input that lets user choose the number of bins.</p>
+<ul>
+<li><p>Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.</p></li>
+<li><p>5 minutes</p></li>
+</ul>
 
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Modules</h2></hgroup><article  id="modules">
+</article></slide><slide class=''><hgroup><h2>Exercise 3</h2></hgroup><article  id="exercise-3">
 
-</article></slide><slide class=''><hgroup><h2>Placeholder</h2></hgroup><article  id="placeholder">
+<ul>
+<li><p>Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title.</p></li>
+<li><p>10 minutes</p></li>
+</ul>
 
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Reactive Programming</h2></hgroup><article  id="reactive-programming">
 
 </article></slide><slide class=''><hgroup><h2>What is Reactivity?</h2></hgroup><article  id="what-is-reactivity">
 
 <p>The Server keeps monitoring the UI. Whenever there is a change in the UI, the Server will follow some instructions (run some R code) accordingly and update the UI&#39;s display.</p>
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Modules</h2></hgroup><article  id="modules">
+
+</article></slide><slide class=''><hgroup><h2>Placeholder</h2></hgroup><article  id="placeholder">
 
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Where to go next?</h2></hgroup><article  id="where-to-go-next">
 
