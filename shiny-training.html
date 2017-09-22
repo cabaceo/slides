@@ -181,6 +181,50 @@
 <li>Web broswer (Safari, Chrome or Firefox)</li>
 </ul>
 
+</article></slide><slide class=''><hgroup><h2>Change Rstudio Layout</h2></hgroup><article  id="change-rstudio-layout">
+
+<ul>
+<li>Rstudio -&gt; Preferences -&gt; Pane Layout <img src="img/pane-layout.png" alt="" style="width: 60%;"/></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Change Tab Width</h2></hgroup><article  id="change-tab-width">
+
+<ul>
+<li>Default is 2 spaces. Change to 8.</li>
+<li>This will force you to write shorter code. <img src="img/tab-width.png" alt="" style="width: 60%;"/></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Show Margin Line</h2></hgroup><article  id="show-margin-line">
+
+<ul>
+<li>Check &quot;Show margin&quot; and set &quot;Margin column&quot; to be 80.</li>
+<li>When writing code, never go beyond this margin line.</li>
+<li>This will make your code easier to read. <img src="img/margin-col.png" alt="" style="width: 50%;"/></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>R Code Style</h2></hgroup><article  id="r-code-style">
+
+<p>When naming,</p>
+
+<ul>
+<li>use lower case
+
+<ul>
+<li>Good: student &lt;- 25; foo.R,</li>
+<li>Bad : Student &lt;- 25; Foo.R</li>
+</ul></li>
+<li>use _ to connect
+
+<ul>
+<li>Good: learn_shiny &lt;- function(start, end)</li>
+<li>Bad : learnShiny &lt;- function(start, end)</li>
+</ul></li>
+<li>names should be meaningful</li>
+<li>use verb to name a function</li>
+</ul>
+
+<p><a href='http://style.tidyverse.org/files.html' title=''>R Style Guide</a></p>
+
 </article></slide><slide class=''><hgroup><h2>Install R packages</h2></hgroup><article  id="install-r-packages">
 
 <pre class = 'prettyprint lang-r'>pkgs = c(&quot;shiny&quot;, &quot;shinydashboard&quot;
@@ -230,12 +274,6 @@ shinyApp(ui = ui, server = server)</pre>
 
 <h3><strong>open exercises/01-plot-histogram.R</strong></h3>
 
-</article></slide><slide class=''><hgroup><h2>Deploy a Shiny App</h2></hgroup><article  id="deploy-a-shiny-app">
-
-<h3><strong>Need to show Harry and Binqi how to do it.</strong> Delete this line afterwards.</h3>
-
-<h3>Sign up at <a href='http://www.shinyapps.io' title=''>shinyapps.io</a>.</h3>
-
 </article></slide><slide class=''><hgroup><h2>Basic structure of UI and server</h2></hgroup><article  id="basic-structure-of-ui-and-server">
 
 <h3>UI elements:</h3>
@@ -256,34 +294,46 @@ shinyApp(ui = ui, server = server)</pre>
 <h3>server elements:</h3>
 
 <ul>
+<li>renderText()</li>
 <li>renderPlot()</li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>Inside UI</h2></hgroup><article  id="inside-ui">
 
-<h3>Input &amp; output elements:</h3>
+<h3>Input elements (inside of <strong>sidebarPanel()</strong>):</h3>
 
 <ul>
 <li>textInput()</li>
-<li>sliderInput() # run ?sliderInput to learn how to use it</li>
-<li>plotOutput()</li>
+<li>numericInput()</li>
 </ul>
 
-<p>By and large, put output elements inside of <strong>mainPanel()</strong>, and input elements inside of <strong>sidebarPanel()</strong>.</p>
+<h3>Output elements (inside of <strong>mainPanel()</strong>):</h3>
+
+<ul>
+<li>textOutput()</li>
+<li>plotOutput()</li>
+</ul>
 
 </article></slide><slide class=''><hgroup><h2>Exercise 2</h2></hgroup><article  id="exercise-2">
 
 <ul>
-<li><p>Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.</p></li>
-<li><p>5 minutes</p></li>
+<li>Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.</li>
+<li>?sliderInput()</li>
+<li>5 ~ 10 minutes</li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>Exercise 3</h2></hgroup><article  id="exercise-3">
 
 <ul>
-<li><p>Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title.</p></li>
-<li><p>10 minutes</p></li>
+<li>Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title.</li>
+<li>5 ~ 10 minutes</li>
 </ul>
+
+</article></slide><slide class=''><hgroup><h2>Deploy a Shiny App</h2></hgroup><article  id="deploy-a-shiny-app">
+
+<h3><strong>Need to show Harry and Binqi how to do it.</strong> Delete this line afterwards.</h3>
+
+<h3>Sign up at <a href='http://www.shinyapps.io' title=''>shinyapps.io</a>.</h3>
 
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Reactive Programming</h2></hgroup><article  id="reactive-programming">
 
@@ -300,8 +350,9 @@ shinyApp(ui = ui, server = server)</pre>
 </article></slide><slide class=''><hgroup><h2>Resources</h2></hgroup><article  id="resources">
 
 <ul>
+<li><a href='http://style.tidyverse.org' title=''>R style guide</a>.</li>
 <li>Rstudio&#39;s guided <a href='https://shiny.rstudio.com/tutorial/' title=''>tutorial</a> for beginners.</li>
-<li>Rstudio&#39;s <a href='https://shiny.rstudio.com/articles/' title=''>articles</a>.</li>
+<li>Rstudio&#39;s technical <a href='https://shiny.rstudio.com/articles/' title=''>articles</a>.</li>
 <li><a href='https://github.com/rstudio/shiny' title=''>Shiny github page</a>.</li>
 <li><a href='https://groups.google.com/forum/#!forum/shiny-discuss' title=''>Shiny Google group</a>.</li>
 <li><a href='https://github.com/rstudio/shiny-examples' title=''>&gt;100 shiny app examples with code</a>.</li>

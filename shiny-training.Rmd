@@ -5,6 +5,8 @@ output:
   ioslides_presentation:
     self_contained: no
     incremental: false
+    fig_width: 7
+    fig_height: 6
 ---
 
 # Overview
@@ -83,6 +85,39 @@ It allows statisticians who don't know web technologies to easily make and publi
 - [Rstudio](https://www.rstudio.com/products/rstudio/download/)
 - Web broswer (Safari, Chrome or Firefox)
 
+## Change Rstudio Layout
+
+- Rstudio -> Preferences -> Pane Layout
+<img src="img/pane-layout.png" alt="" style="width: 60%;"/>
+
+## Change Tab Width
+
+- Default is 2 spaces. Change to 8.
+- This will force you to write shorter code.
+<img src="img/tab-width.png" alt="" style="width: 60%;"/>
+
+## Show Margin Line
+
+- Check "Show margin" and set "Margin column" to be 80.
+- When writing code, never go beyond this margin line. 
+- This will make your code easier to read.
+<img src="img/margin-col.png" alt="" style="width: 50%;"/>
+
+## R Code Style
+
+When naming, 
+
+- use lower case 
+    - Good: student <- 25; foo.R, 
+    - Bad : Student <- 25; Foo.R
+- use _ to connect
+    - Good: learn_shiny <- function(start, end)
+    - Bad : learnShiny  <- function(start, end)
+- names should be meaningful
+- use verb to name a function
+
+[R Style Guide](http://style.tidyverse.org/files.html)
+
 ## Install R packages
 
 ```{r, eval=FALSE}
@@ -133,12 +168,6 @@ shinyApp(ui = ui, server = server)
 ### **open exercises/01-plot-histogram.R**
 
 
-## Deploy a Shiny App
-
-### **Need to show Harry and Binqi how to do it.** Delete this line afterwards.
-
-### Sign up at [shinyapps.io](http://www.shinyapps.io).
-
 ## Basic structure of UI and server
 
 ### UI elements:
@@ -148,30 +177,37 @@ shinyApp(ui = ui, server = server)
         - mainPanel()
 
 ### server elements:
+- renderText()
 - renderPlot()
 
 ## Inside UI 
 
-### Input & output elements:
+### Input elements (inside of **sidebarPanel()**):
 - textInput()
-- sliderInput() # run ?sliderInput to learn how to use it
+- numericInput()
+
+### Output elements (inside of **mainPanel()**):
+- textOutput()
 - plotOutput()
 
-By and large, put output elements inside of **mainPanel()**, and input elements 
-inside of **sidebarPanel()**.
 
 ## Exercise 2
 
 - Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.
-
-- 5 minutes
+- ?sliderInput()
+- 5 ~ 10 minutes
 
 ## Exercise 3
 
 - Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title. 
-
-- 10 minutes
+- 5 ~ 10 minutes
  
+
+## Deploy a Shiny App
+
+### **Need to show Harry and Binqi how to do it.** Delete this line afterwards.
+
+### Sign up at [shinyapps.io](http://www.shinyapps.io).
 
 
 
@@ -188,6 +224,10 @@ inside of **sidebarPanel()**.
 The Server keeps monitoring the UI. Whenever there is a change in the UI, the Server will follow some instructions (run some R code) accordingly and update the UI's display.
 
 
+
+
+
+
 # Modules
 
 ## Placeholder
@@ -198,8 +238,9 @@ The Server keeps monitoring the UI. Whenever there is a change in the UI, the Se
 
 ## Resources
 
+- [R style guide](http://style.tidyverse.org).
 - Rstudio's guided [tutorial](https://shiny.rstudio.com/tutorial/) for beginners.
-- Rstudio's [articles](https://shiny.rstudio.com/articles/).
+- Rstudio's technical [articles](https://shiny.rstudio.com/articles/).
 - [Shiny github page](https://github.com/rstudio/shiny).
 - [Shiny Google group](https://groups.google.com/forum/#!forum/shiny-discuss).
 - [>100 shiny app examples with code](https://github.com/rstudio/shiny-examples).
