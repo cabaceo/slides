@@ -4,42 +4,39 @@ title: Shiny
 output: 
   ioslides_presentation:
     self_contained: no
-    incremental: false
+    incremental: true
     fig_width: 7
     fig_height: 6
 ---
 
 # Overview
 
-## Goals 
+## Goals | You will learn:
 
-### You will learn:
-
-- Shiny Fundamentals
-- Reactive Programming
-- Shiny Modules
+> - Shiny Fundamentals
+> - Reactive Programming
+> - Shiny Modules
 
 ## Outline
 
-- Hour 0.5: intro, usecases and setup.
-- Hour 1.5: shiny fundamentals (UI & server, input & output, and themes).
-- Hour 3  : reactive programming (the most important thing).
-- Hour 4  : modules (code re-use).
+> - Hour 0.5: intro, usecases and setup.
+> - Hour 1.5: shiny fundamentals (UI & server, input & output, and themes).
+> - Hour 3  : reactive programming (the most important thing).
+> - Hour 4  : modules (code re-use).
 
 
 # Intro
 
 ## What?
 
-- Shiny allows you to rapidly build web apps using R.
-- [Shinyapps.io](https://www.shinyapps.io) allows you to easily deploy these apps.
+> - Shiny allows you to rapidly build web apps using R.
+> - [Shinyapps.io](https://www.shinyapps.io) allows you to easily deploy these apps.
 
 ## Who? 
 
-- Biostatisticians
-- Statisticians
-- Data scientists
-- R programmers
+> - Biostatisticians & Statisticians
+> - Data scientists
+> - R programmers
 
 ## Why? 
 
@@ -53,7 +50,7 @@ output:
 
 # Demo
 
-## Simple Examples
+## Simple examples
 
 1. Interactive plots. For example, a [bar chart](https://cabaceo.com/berkshire-vs-sp500/) that shows the actual values when you mouse over the bars. A [timeseries plot](https://cabaceo.com/shiller-pe/) that changes as you select different periods.
 
@@ -61,7 +58,7 @@ output:
 
 3. Embed data analysis in your blog post so that readers can play with the results. [Example](https://uasnap.shinyapps.io/ex_leaflet/).
 
-## Complex Examples
+## Complex examples
 
 1. Super easy to run calculations under different scenarios or statistical procedures with different input parameters. For example, [calculate sample sizes in multi-regional clinical trials](https://gmlang.shinyapps.io/SSCRC/).
 
@@ -79,42 +76,63 @@ It allows statisticians who don't know web technologies to easily make and publi
 
 # Setup
 
-## Install Dev Tools
+## Install dev tools
 
-- [R](https://www.r-project.org)
-- [Rstudio](https://www.rstudio.com/products/rstudio/download/)
-- Web broswer (Safari, Chrome or Firefox)
+> - [R](https://www.r-project.org)
+> - [Rstudio](https://www.rstudio.com/products/rstudio/download/)
+> - Web broswer (Safari, Chrome or Firefox)
+> - Sign up for a FREE account at [shinyapps.io](http://www.shinyapps.io)
 
-## Change Rstudio Layout
+## Change Rstudio layout
 
-- Rstudio -> Preferences -> Pane Layout
-<img src="img/pane-layout.png" alt="" style="width: 60%;"/>
+> - Go to **Rstudio -> Preferences -> Pane Layout**
+> - Change to as shown below. 
 
-## Change Tab Width
+<img src="img/pane-layout.png" alt="" style="width: 55%;"/>
 
-- Default is 2 spaces. Change to 8.
-- This will force you to write shorter code.
+## Change tab width
+
+> - Default is 2 spaces. Change to 8.
+> - This will force you to write shorter code.
 <img src="img/tab-width.png" alt="" style="width: 60%;"/>
 
-## Show Margin Line
+## Show margin line
 
-- Check "Show margin" and set "Margin column" to be 80.
-- When writing code, never go beyond this margin line. 
-- This will make your code easier to read.
+> - Check **Show margin** and set **Margin column** to be 80.
+> - When writing code, never go beyond this margin line. 
+> - This will make your code easier to read.
 <img src="img/margin-col.png" alt="" style="width: 50%;"/>
 
-## R Code Style
+## R code style
 
 When naming, 
 
-- use lower case 
-    - Good: student <- 25; foo.R, 
-    - Bad : Student <- 25; Foo.R
-- use _ to connect
-    - Good: learn_shiny <- function(start, end)
-    - Bad : learnShiny  <- function(start, end)
-- names should be meaningful
-- use verb to name a function
+> - names should be meaningful
+> - use lower case 
+
+```{r, eval=FALSE}
+# Good: 
+student <- 25
+foo.R, 
+
+# Bad: because of Uppercased 1st letter
+Student <- 25
+Foo.R
+```
+
+## R code style cont.
+
+> - use _ to connect
+
+```{r, eval=FALSE}
+# Good: 
+learn_shiny <- function(start, end)
+
+# Bad: because of camelCase 
+learnShiny<- function(start, end)
+```
+
+> - use verb to name a function
 
 [R Style Guide](http://style.tidyverse.org/files.html)
 
@@ -134,6 +152,16 @@ for (pkg in pkgs) {
 
 ## Hello, World!
 
+Open <font color="blue">examples/00-hello-world-boring.R</font> in Rstudio.
+
+> - Click the arrow next to **Run App** -> check **Run External** (This will open the app in browser.)
+
+<img src="img/open-in-browser.png" alt="" style="width: 60%;"/>
+
+Click **Run App**.
+
+## Read code
+
 ```{r, eval=FALSE}
 library(shiny)
 
@@ -149,38 +177,83 @@ server <- function(input, output) {}
 shinyApp(ui = ui, server = server)
 ```
 
-## Self-introduction
+## Introduce yourself
 
-- Add an input box to allow people to enter their names. 
-- Output one sentence to introduce people to the world.
+> - Add an input box to let people enter their names. 
+> - Output a sentence to say hello to the world.
 
-### **run examples/01-hello-world.R**
+Run <font color="blue">examples/01-hello-world.R</font>
 
-## Sidebar Layout
+## Read code
 
-### **run examples/01-hello-world-w-sidebar.R**
+```{r, eval=FALSE}
+# make UI ---
+ui <- fluidPage(
+        titlePanel("Hello World!"),
+        ###<b>
+        mainPanel(
+                textInput("my_name", 
+                          label = "Enter your name:", 
+                          value = "Harry"),
+                textOutput("self_intro")
+        )
+        ###</b>
+)
+
+# make server ---
+server <- function(input, output) {
+        ###<b>
+        output$self_intro = renderText(
+                paste("My name is", input$my_name)
+        )
+        ###</b>
+}
+```
+
+## Use sidebar 
+
+Run <font color="blue">examples/01-hello-world-w-sidebar.R</font>
+
+```{r, eval=FALSE}
+ui <- fluidPage(
+        titlePanel("Hello World!"),
+        ###<b>
+        sidebarLayout(
+                sidebarPanel(
+                        textInput("my_name", 
+                                  label = "Enter your name:", 
+                                  value = "Harry")
+                        ),
+                
+                mainPanel(
+                        textOutput("self_intro")
+                )
+        )
+        ###</b>
+)
+```
+
 
 ## Exercise 1
 
-- Make a shiny app that draws a histogram of some made-up data, letting users specify the number of bins.
-- Do it together.
+> - Make a shiny app that draws a histogram of some made-up data, letting users specify the number of bins.
 
-### **open exercises/01-plot-histogram.R**
+Complete <font color = "red">exercises/01-plot-histogram.R</font> together.
 
 
-## Basic structure of UI and server
+## Basic structure of Shiny App
 
-### UI elements:
+### UI:
 - fluidPage()
     - sidebarLayout()
         - sidebarPanel()
         - mainPanel()
 
-### server elements:
+### server:
 - renderText()
 - renderPlot()
 
-## Inside UI 
+## UI 
 
 ### Input elements (inside of **sidebarPanel()**):
 - textInput()
@@ -190,24 +263,39 @@ shinyApp(ui = ui, server = server)
 - textOutput()
 - plotOutput()
 
+## server
+```{r, eval=FALSE}
+server <- function(input, output) {
+        1. takes user supplied values from input
+        2. run computation
+        3. return or display results through output
+}
+```
 
 ## Exercise 2
 
-- Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.
-- ?sliderInput()
-- 5 ~ 10 minutes
+> - Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.
+> - ?sliderInput()
+> - 5 ~ 10 minutes
 
 ## Exercise 3
 
-- Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title. 
-- 5 ~ 10 minutes
+> - Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title. 
+> - 5 ~ 10 minutes
+
+## Deploy Shiny App
+
+> - Click the blue button.
+
+<img src="img/deploy.png" alt="" style="width: 100%;"/>
  
+## Break (5 minutes)
 
-## Deploy a Shiny App
 
-### **Need to show Harry and Binqi how to do it.** Delete this line afterwards.
 
-### Sign up at [shinyapps.io](http://www.shinyapps.io).
+# Bigger Shiny Apps 
+
+## ui.R & server.R
 
 
 
