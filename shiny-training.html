@@ -381,19 +381,21 @@ server &lt;- function(input, output) {
         3. return or display results through output
 }</pre>
 
+</article></slide><slide class=''><hgroup><h2>Break (5 minutes)</h2></hgroup><article  id="break-5-minutes">
+
 </article></slide><slide class=''><hgroup><h2>Exercise 2</h2></hgroup><article  id="exercise-2">
 
 <ul>
 <li>Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.</li>
 <li>?sliderInput()</li>
-<li>5 ~ 10 minutes</li>
+<li>10 minutes</li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>Exercise 3</h2></hgroup><article  id="exercise-3">
 
 <ul>
 <li>Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title.</li>
-<li>5 ~ 10 minutes</li>
+<li>10 minutes</li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2>Deploy Shiny App</h2></hgroup><article  id="deploy-shiny-app">
@@ -404,11 +406,65 @@ server &lt;- function(input, output) {
 
 <p><img src="img/deploy.png" alt="" style="width: 100%;"/></p>
 
-</article></slide><slide class=''><hgroup><h2>Break (5 minutes)</h2></hgroup><article  id="break-5-minutes">
-
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Bigger Shiny Apps</h2></hgroup><article  id="bigger-shiny-apps">
 
-</article></slide><slide class=''><hgroup><h2>ui.R &amp; server.R</h2></hgroup><article  id="ui.r-server.r">
+</article></slide><slide class=''><hgroup><h2>File Structures</h2></hgroup><article  id="file-structures">
+
+<p><img src="img/structure-complex.png" alt="" style="width: 80%;"/></p>
+
+</article></slide><slide class=''><hgroup><h2>File Structures</h2></hgroup><article  id="file-structures-1">
+
+<ul>
+<li>global.R</li>
+<li>ui.R</li>
+<li>server.R</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Example global.R</h2></hgroup><article  id="example-global.r">
+
+<pre class = 'prettyprint lang-r'>library(shiny)
+library(shinyjs)
+library(dplyr)
+library(ggplot2)
+
+# change max upload file size to 30 MB, default is 5 MB
+options(shiny.maxRequestSize = 30*1024^2, shiny.reactlog = T)
+
+# set paths
+helper_path = &quot;R/helper&quot;
+ui_path = &quot;R/ui&quot;
+server_path = &quot;R/server&quot;
+
+# load helper functions
+for (fname in list.files(helper_path)) 
+        source(file.path(helper_path, fname))</pre>
+
+</article></slide><slide class=''><hgroup><h2>Example ui.R</h2></hgroup><article  id="example-ui.r">
+
+<pre class = 'prettyprint lang-r'>navbarPage(
+        theme = &quot;darkly1.css&quot;, # look for the file in /www 
+        title = &#39;DataTable Options&#39;,
+        tabPanel(&#39;Show 15 rows per page&#39;, DT::dataTableOutput(&#39;ex1&#39;)),
+        tabPanel(&#39;All rows on one page&#39;,  DT::dataTableOutput(&#39;ex3&#39;)),
+        tabPanel(&#39;No search box&#39;,         DT::dataTableOutput(&#39;ex4&#39;)),
+        tabPanel(&#39;with JavaScript&#39;,       DT::dataTableOutput(&#39;ex5&#39;))
+)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Template server.R</h2></hgroup><article  id="template-server.r">
+
+<pre >server &lt;- function(input, output) {
+        1. takes user supplied values from input
+        2. run computation
+        3. return or display results through output
+}</pre>
+
+</article></slide><slide class=''><hgroup><h2>An example with css and js</h2></hgroup><article  id="an-example-with-css-and-js">
+
+<p><img src="img/struct-complex-example.png" alt="" style="width: 100%;"/></p>
+
+<p>Run <font color="blue">examples/02-output-data-table/ui.R</font></p>
+
+<p>Look at the code in global.R, ui.R and server.R</p>
 
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Reactive Programming</h2></hgroup><article  id="reactive-programming">
 
@@ -424,7 +480,7 @@ server &lt;- function(input, output) {
 
 </article></slide><slide class=''><hgroup><h2>Resources</h2></hgroup><article  id="resources">
 
-<ul class = 'build'>
+<ul>
 <li><a href='http://style.tidyverse.org' title=''>R style guide</a>.</li>
 <li>Rstudio&#39;s guided <a href='https://shiny.rstudio.com/tutorial/' title=''>tutorial</a> for beginners.</li>
 <li>Rstudio&#39;s technical <a href='https://shiny.rstudio.com/articles/' title=''>articles</a>.</li>

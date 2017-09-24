@@ -272,34 +272,86 @@ server <- function(input, output) {
 }
 ```
 
+## Break (5 minutes)
+
 ## Exercise 2
 
 > - Make a shiny app that draws a histogram of Petal.Length in the iris data. Use a slider input to let user choose the number of bins.
 > - ?sliderInput()
-> - 5 ~ 10 minutes
+> - 10 minutes
 
 ## Exercise 3
 
 > - Add a scatter plot of Sepal.Length vs Sepal.Width. Add a text input box to let user supply a plot title. 
-> - 5 ~ 10 minutes
+> - 10 minutes
 
 ## Deploy Shiny App
 
 > - Click the blue button.
 
 <img src="img/deploy.png" alt="" style="width: 100%;"/>
- 
-## Break (5 minutes)
-
-
 
 # Bigger Shiny Apps 
 
-## ui.R & server.R
+## File Structures
 
+<img src="img/structure-complex.png" alt="" style="width: 80%;"/>
 
+## File Structures
 
+> - global.R
+> - ui.R
+> - server.R
 
+## Example global.R
+
+```{r, eval=FALSE}
+library(shiny)
+library(shinyjs)
+library(dplyr)
+library(ggplot2)
+
+# change max upload file size to 30 MB, default is 5 MB
+options(shiny.maxRequestSize = 30*1024^2, shiny.reactlog = T)
+
+# set paths
+helper_path = "R/helper"
+ui_path = "R/ui"
+server_path = "R/server"
+
+# load helper functions
+for (fname in list.files(helper_path)) 
+        source(file.path(helper_path, fname))
+```
+
+## Example ui.R
+```{r, eval=FALSE}
+navbarPage(
+        theme = "darkly1.css", # look for the file in /www 
+        title = 'DataTable Options',
+        tabPanel('Show 15 rows per page', DT::dataTableOutput('ex1')),
+        tabPanel('All rows on one page',  DT::dataTableOutput('ex3')),
+        tabPanel('No search box',         DT::dataTableOutput('ex4')),
+        tabPanel('with JavaScript',       DT::dataTableOutput('ex5'))
+)
+```
+
+## Template server.R
+```{}
+server <- function(input, output) {
+        1. takes user supplied values from input
+        2. run computation
+        3. return or display results through output
+}
+```
+
+## An example with css and js
+
+<img src="img/struct-complex-example.png" alt="" style="width: 100%;"/>
+
+Run <font color="blue">examples/02-output-data-table/ui.R</font>
+
+Look at the code in global.R, ui.R and server.R
 
 
 
@@ -326,10 +378,10 @@ The Server keeps monitoring the UI. Whenever there is a change in the UI, the Se
 
 ## Resources
 
-- [R style guide](http://style.tidyverse.org).
-- Rstudio's guided [tutorial](https://shiny.rstudio.com/tutorial/) for beginners.
-- Rstudio's technical [articles](https://shiny.rstudio.com/articles/).
-- [Shiny github page](https://github.com/rstudio/shiny).
-- [Shiny Google group](https://groups.google.com/forum/#!forum/shiny-discuss).
-- [>100 shiny app examples with code](https://github.com/rstudio/shiny-examples).
-- [Shiny developer conference videos 2016](https://www.rstudio.com/resources/webinars/shiny-developer-conference/).
+> - [R style guide](http://style.tidyverse.org).
+> - Rstudio's guided [tutorial](https://shiny.rstudio.com/tutorial/) for beginners.
+> - Rstudio's technical [articles](https://shiny.rstudio.com/articles/).
+> - [Shiny github page](https://github.com/rstudio/shiny).
+> - [Shiny Google group](https://groups.google.com/forum/#!forum/shiny-discuss).
+> - [>100 shiny app examples with code](https://github.com/rstudio/shiny-examples).
+> - [Shiny developer conference videos 2016](https://www.rstudio.com/resources/webinars/shiny-developer-conference/).
