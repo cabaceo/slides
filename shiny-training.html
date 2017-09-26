@@ -240,9 +240,7 @@ learnShiny&lt;- function(start, end)</pre>
 
 </article></slide><slide class=''><hgroup><h2>Install R packages</h2></hgroup><article  id="install-r-packages">
 
-<pre class = 'prettyprint lang-r'>pkgs = c(&quot;shiny&quot;, &quot;shinydashboard&quot;
-         # , &quot;plotly&quot;
-         )
+<pre class = 'prettyprint lang-r'>pkgs = c(&quot;shiny&quot;, &quot;shinydashboard&quot;, &quot;tidyverse&quot;, &quot;plotly&quot;)
 for (pkg in pkgs) {
         if (!pkg %in% installed.packages()) {
                 cat(paste(pkg, &quot;missing, will attempt to install\n&quot;))
@@ -452,7 +450,7 @@ for (fname in list.files(helper_path))
 
 </article></slide><slide class=''><hgroup><h2>Template server.R</h2></hgroup><article  id="template-server.r">
 
-<pre >server &lt;- function(input, output) {
+<pre class = 'prettyprint lang-r'>server &lt;- function(input, output) {
         1. takes user supplied values from input
         2. run computation
         3. return or display results through output
@@ -466,11 +464,246 @@ for (fname in list.files(helper_path))
 
 <p>Look at the code in global.R, ui.R and server.R</p>
 
+</article></slide><slide class=''><hgroup><h2>Break (3 minutes)</h2></hgroup><article  id="break-3-minutes">
+
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Reactive Programming</h2></hgroup><article  id="reactive-programming">
 
-</article></slide><slide class=''><hgroup><h2>What is Reactivity?</h2></hgroup><article  id="what-is-reactivity">
+</article></slide><slide class=''><hgroup><h2>Exercise</h2></hgroup><article  id="exercise">
 
-<p>The Server keeps monitoring the UI. Whenever there is a change in the UI, the Server will follow some instructions (run some R code) accordingly and update the UI&#39;s display.</p>
+<p>Open <font color="blue">exercises/04-reactivity-00.R</font>.</p>
+
+<p>Task: complete the server function. Make the plot output show a simple plot of the first nrows of a built-in dataset. If you can&#39;t think of any, use <code>cars</code>. So basically, make the Shiny equivalent of <code>plot(head(cars, nrows))</code>.</p>
+
+<ul>
+<li>2 minutes</li>
+</ul>
+
+<p><font size=2>credit: <a href='https://www.rstudio.com/resources/videos/effective-reactive-programming/' title=''>Joe Cheng</a></font></p>
+
+</article></slide><slide class=''><hgroup><h2>Solution</h2></hgroup><article  id="solution">
+
+<pre class = 'prettyprint lang-r'>output$plot &lt;- renderPlot({
+        plot(head(cars, input$nrows))
+})</pre>
+
+<p>Run the app. As we change the number of rows, the scatter plot updates automatically. Input changes and output changes accordingly. Let&#39;s look at another example of reactivity.</p>
+
+</article></slide><slide class=''><hgroup><h2>Example: Fibonacci</h2></hgroup><article  id="example-fibonacci">
+
+<p>This app finds the nth Fibonacci number and its inverse.</p>
+
+<p>I have two versions. One is slow and the other is faster. This is because the way I used reactivitiy are different.</p>
+
+<p>Run <font color="blue">examples/03-reactivity-fibonacci-slow.R</font>.</p>
+
+<p>Run <font color="blue">examples/03-reactivity-fibonacci-fast.R</font>.</p>
+
+<p><font size=2>credit: <a href='https://shiny.rstudio.com/articles/reactivity-overview.html' title=''>Reactivity - An overview</a></font></p>
+
+</article></slide><slide class=''><hgroup><h2>Fibonacci Code Digest</h2></hgroup><article  id="fibonacci-code-digest">
+
+<h3>Slow Version</h3>
+
+<pre class = 'prettyprint lang-r'>server &lt;- function(input, output) {
+<b>        # run fib() twice 
+        output$nth_fib &lt;- renderText({ fib(input$n) })
+        output$nth_fib_inv &lt;- renderText({ 1 / fib(input$n) })
+</b>}</pre>
+
+<h3>Fast Version</h3>
+
+<pre class = 'prettyprint lang-r'>server &lt;- function(input, output) {
+<b>        # only run fib() once
+        current_fib &lt;- reactive({ fib(input$n) })
+</b>        output$nth_fib &lt;- renderText({ current_fib() })
+        output$nth_fib_inv &lt;- renderText({ 1 / current_fib() })
+}</pre>
+
+</article></slide><slide class=''><hgroup><h2>You may ask</h2></hgroup><article  id="you-may-ask">
+
+<p>Q: In the fast version, although it runs <code>fib()</code> only once, it runs <code>current_fib()</code> twice. Isn&#39;t this the same as if you run <code>fib()</code> twice?</p>
+
+<pre class = 'prettyprint lang-r'>server &lt;- function(input, output) {
+        # only run fib() once
+        current_fib &lt;- reactive({ fib(input$n) })
+<b>        output$nth_fib &lt;- renderText({ current_fib() })
+        output$nth_fib_inv &lt;- renderText({ 1 / current_fib() })
+</b>}</pre>
+
+<p>A: No. We are NOT doing function composition here because <code>current_fib()</code> is not really a function, although we use it as if it is.</p>
+
+</article></slide><slide class=''><hgroup><h2>Subtle but important difference</h2></hgroup><article  id="subtle-but-important-difference">
+
+<p>This question shows that we misunderstood reactivity. It shows that we viewed <code>reactive({})</code> as a function. We thought we were pushing <code>fib(input$n)</code> into <code>reactive({})</code>, that we got a result returned back, and that we were assigning the result to <code>current_fib</code>. <strong>This is wrong.</strong></p>
+
+<p>Instead of thinking <code>reactive({})</code> as a function that performs <code>what</code>, think of it as a recipe that describes <code>how</code>.</p>
+
+<p>In other words, when using expressions like <code>reactive({})</code>, <code>renderPlot({})</code>, and <code>renderText({})</code>, we&#39;re not telling R to do this or that. Instead, we&#39;re describing how to do something and let R decide when to do it or if to do it at all.</p>
+
+</article></slide><slide class=''><hgroup><h2>A moment of clarity</h2></hgroup><article  id="a-moment-of-clarity">
+
+<p>There is a difference between telling Shiny <em>to do</em> something, and telling Shiny <em>how to do</em> something.</p>
+
+<h3>Maxim</h3>
+
+<p>There is a difference between telling people <em>to do</em> something, and showing people <em>how to do</em> something.</p>
+
+<h3>Corollary 1</h3>
+
+<p>The next time someone tells you to do something, ask <em>how</em>.</p>
+
+<h3>Corollary 2</h3>
+
+<p>Ignore the people who always tell you <em>what to do</em> but can&#39;t show you <em>how to do</em> it.</p>
+
+</article></slide><slide class=''><hgroup><h2>Really understand reactivity</h2></hgroup><article  id="really-understand-reactivity">
+
+<p>Let&#39;s consider a very basic app.</p>
+
+<p>Run <font color="blue">examples/04-reactivity-show-number.R</font>.</p>
+
+<p>Here&#39;s the server logic. It just shows the input number on the screen.</p>
+
+<pre class = 'prettyprint lang-r'>server &lt;- function(input, output) {
+        output$text &lt;- renderText({
+                print(input$a)
+        })
+}</pre>
+
+<p>How does this work under the hood?</p>
+
+</article></slide><slide class=''><hgroup><h2>How do you print the value of a variable in R?</h2></hgroup><article  id="how-do-you-print-the-value-of-a-variable-in-r">
+
+<pre class = 'prettyprint lang-r'>a = 50
+print(a)
+
+a = 75 # this action makes print(a) &quot;out of date&quot;</pre>
+
+<p>After a is printed, it&#39;s given a new value of 75, how do you print this new value of a?</p>
+
+</article></slide><slide class=''><hgroup><h2>Call <code>print(a)</code> again.</h2></hgroup><article  id="call-printa-again.">
+
+<p>In general, an expression is called <strong>out of date</strong> if one or more objects in the expression has been given a new value since the expression was last called. To <strong>update</strong> an out-of-date expression is easy, just re-run the expression. This is just standard R stuff, not reactivity.</p>
+
+<p>In theory, we don&#39;t need shiny. We can build the app from ground zero by continuously re-running every expression in the app. Information are <strong>pulled</strong> from the input instead of <strong>pushed</strong> to the output. For example, <code>print(input$a)</code> learns the new value of <code>input$a</code> because the server re-runs <code>print(input$a)</code>, not because the new value is magically pushed into output.</p>
+
+<p>In practice, this approach will quickly slow down your app and make it unresposive.</p>
+
+</article></slide><slide class=''><hgroup><h2>The key to reactivity</h2></hgroup><article  id="the-key-to-reactivity">
+
+<blockquote>
+<p>Shiny solves this problem by creating a <strong>system of alerts</strong> that lets the server know when an expression becomes <strong>out of date</strong>. The server still checks in on your app every few microseconds, but instead of re-running each expression each time, it only runs the expressions that the alert system has flagged as <strong>out of date</strong>. If no alerts have appeared, the server does not have to run anything at all. It can rest until the next check. If alerts have appeared, the server runs all of the expressions that are <strong>out of date</strong> at that moment, an event known as a <strong>flush</strong>.</p>
+
+<p><cite><a href='https://shiny.rstudio.com/articles/understanding-reactivity.html' title=''>How to understand reactivity in R</a></p>
+</blockquote>
+
+</article></slide><slide class=''><hgroup><h2>Alerts are like carrier pigeons</h2></hgroup><article  id="alerts-are-like-carrier-pigeons">
+
+<p><img src="img/pigeon1.png" alt="" style="width: 100%;"/></p>
+
+<p><font size=2>credit: <a href='https://shiny.rstudio.com/articles/understanding-reactivity.html' title=''>Rstudio</a></font></p>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article  id="section">
+
+<p><img src="img/pigeon2.png" alt="" style="width: 100%;"/></p>
+
+<p><font size=2>credit: <a href='https://shiny.rstudio.com/articles/understanding-reactivity.html' title=''>Rstudio</a></font></p>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article  id="section-1">
+
+<p><img src="img/pigeon3.png" alt="" style="width: 100%;"/></p>
+
+<p><font size=2>credit: <a href='https://shiny.rstudio.com/articles/understanding-reactivity.html' title=''>Rstudio</a></font></p>
+
+</article></slide><slide class=''><hgroup><h2>Revisit Fibonacci Fast Version</h2></hgroup><article  id="revisit-fibonacci-fast-version">
+
+<p>Will this work? Why and why not?</p>
+
+<pre class = 'prettyprint lang-r'>server &lt;- function(input, output) {
+<b>        current_fib &lt;- fib(input$n)
+</b>        output$nth_fib &lt;- renderText({ current_fib() })
+        output$nth_fib_inv &lt;- renderText({ 1 / current_fib() })
+}</pre>
+
+<ul class = 'build'>
+<li>Let&#39;s find out. Run <font color="blue">examples/05-reactivity-fib-fast-revisit.R</font>.</li>
+<li>Read the error message.</li>
+<li>We forgot to tell Shiny this is a recipe. To fix, wrap <code>fit(input$n)</code> inside of <code>reactive({})</code>: <code>current_fib &lt;- reactive({ fib(input$n) })</code>.</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Exercise 1</h2></hgroup><article  id="exercise-1-1">
+
+<p>Open <font color="blue">exercises/04-reactivity-01.R</font>.</p>
+
+<p>Task: re-write server logic to make sure that <code>head()</code> is only run once for each change to <code>input$nrows</code>.</p>
+
+<ul>
+<li>5 minutes</li>
+</ul>
+
+<p><font size=2>credit: <a href='https://www.rstudio.com/resources/videos/effective-reactive-programming/' title=''>Joe Cheng</a></font></p>
+
+</article></slide><slide class=''><hgroup><h2>Solution</h2></hgroup><article  id="solution-1">
+
+<pre class = 'prettyprint lang-r'>server &lt;- function(input, output) {
+<b>        df &lt;- reactive({
+                head(cars, input$nrows)
+        })
+</b>        
+        output$plot &lt;- renderPlot({
+                plot(df())
+        })
+        
+        output$table &lt;- renderTable({
+                df()
+        })
+}</pre>
+
+<ul class = 'build'>
+<li>How many of you get something like this?</li>
+<li>Any of you did something different?</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Exercise 2</h2></hgroup><article  id="exercise-2-1">
+
+<p>Open <font color="blue">exercises/04-reactivity-02.R</font>.</p>
+
+<p>Run it and it works. The problem is that each of the 4 outputs contains copied-and-pasted logic for selecting your chosen variables, and for building the model.</p>
+
+<p>Task: Can you refactor the code so it&#39;s more efficient and maintainable?</p>
+
+<ul>
+<li>10 minutes</li>
+</ul>
+
+<p><font size=2>credit: <a href='https://www.rstudio.com/resources/videos/effective-reactive-programming/' title=''>Joe Cheng</a></font></p>
+
+</article></slide><slide class=''><hgroup><h2>Solution</h2></hgroup><article  id="solution-2">
+
+<pre class = 'prettyprint lang-r'>selected &lt;- reactive({
+        iris[, c(input$xcol, input$ycol)]
+})
+
+model &lt;- reactive({
+        lm(paste(input$ycol, &quot;~&quot;, input$xcol), selected())
+})</pre>
+
+<ul class = 'build'>
+<li>How many of you get something like this?</li>
+<li>Any of you did something different?</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>You can chain reactive expressions!</h2></hgroup><article  id="you-can-chain-reactive-expressions">
+
+<pre class = 'prettyprint lang-r'><b>selected &lt;- reactive({
+        iris[, c(input$xcol, input$ycol)]
+})
+</b>
+model &lt;- reactive({
+        lm(paste(input$ycol, &quot;~&quot;, input$xcol), 
+<b>           selected()
+</b>           )
+})</pre>
 
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Modules</h2></hgroup><article  id="modules">
 

@@ -139,9 +139,7 @@ learnShiny<- function(start, end)
 ## Install R packages
 
 ```{r, eval=FALSE}
-pkgs = c("shiny", "shinydashboard"
-         # , "plotly"
-         )
+pkgs = c("shiny", "shinydashboard", "tidyverse", "plotly")
 for (pkg in pkgs) {
         if (!pkg %in% installed.packages()) {
                 cat(paste(pkg, "missing, will attempt to install\n"))
@@ -337,7 +335,7 @@ navbarPage(
 ```
 
 ## Template server.R
-```{}
+```{r, eval=FALSE}
 server <- function(input, output) {
         1. takes user supplied values from input
         2. run computation
@@ -353,15 +351,297 @@ Run <font color="blue">examples/02-output-data-table/ui.R</font>
 
 Look at the code in global.R, ui.R and server.R
 
-
+## Break (3 minutes)
 
 
 
 # Reactive Programming
 
-## What is Reactivity?
+## Exercise
 
-The Server keeps monitoring the UI. Whenever there is a change in the UI, the Server will follow some instructions (run some R code) accordingly and update the UI's display.
+Open <font color="blue">exercises/04-reactivity-00.R</font>. 
+
+Task: complete the server function. 
+Make the plot output show a simple plot of the first nrows of a built-in dataset. 
+If you can't think of any, use `cars`. So basically, make the Shiny equivalent of 
+`plot(head(cars, nrows))`.
+
+> - 2 minutes
+
+<font size=2>credit: [Joe Cheng](https://www.rstudio.com/resources/videos/effective-reactive-programming/)</font>
+
+## Solution
+
+```{r, eval=FALSE, results="asis"}
+output$plot <- renderPlot({
+        plot(head(cars, input$nrows))
+})
+```
+
+Run the app. As we change the number of rows, the scatter plot updates automatically. 
+Input changes and output changes accordingly. Let's look at another example of
+reactivity.
+
+## Example: Fibonacci
+
+This app finds the nth Fibonacci number and its inverse. 
+
+I have two versions. One is slow and the other is faster. This is because the way 
+I used reactivitiy are different. 
+
+Run <font color="blue">examples/03-reactivity-fibonacci-slow.R</font>. 
+
+Run <font color="blue">examples/03-reactivity-fibonacci-fast.R</font>. 
+
+<font size=2>credit: [Reactivity - An overview](https://shiny.rstudio.com/articles/reactivity-overview.html)</font>
+
+## Fibonacci Code Digest
+
+### Slow Version
+```{r, eval=FALSE}
+server <- function(input, output) {
+        ###<b>
+        # run fib() twice 
+        output$nth_fib <- renderText({ fib(input$n) })
+        output$nth_fib_inv <- renderText({ 1 / fib(input$n) })
+        ###</b>
+}
+```
+
+### Fast Version
+```{r, eval=FALSE}
+server <- function(input, output) {
+        ###<b>
+        # only run fib() once
+        current_fib <- reactive({ fib(input$n) })
+        ###</b>
+        output$nth_fib <- renderText({ current_fib() })
+        output$nth_fib_inv <- renderText({ 1 / current_fib() })
+}
+```
+
+## You may ask
+
+Q: In the fast version, although it runs `fib()` only once, it runs
+   `current_fib()` twice. Isn't this the same as if you run `fib()` twice?
+
+```{r, eval=FALSE}
+server <- function(input, output) {
+        # only run fib() once
+        current_fib <- reactive({ fib(input$n) })
+        ###<b>
+        output$nth_fib <- renderText({ current_fib() })
+        output$nth_fib_inv <- renderText({ 1 / current_fib() })
+        ###</b>
+}
+```
+
+A: No. We are NOT doing function composition here because `current_fib()` is not 
+really a function, although we use it as if it is.
+
+## Subtle but important difference
+
+This question shows that we misunderstood reactivity. It shows that we viewed 
+`reactive({})` as a function. We thought we were pushing `fib(input$n)` into 
+`reactive({})`, that we got a result returned back, and that we were 
+assigning the result to `current_fib`. **This is wrong.**
+
+Instead of thinking `reactive({})` as a function that performs `what`, think of it 
+as a recipe that describes `how`.
+
+In other words, when using expressions like `reactive({})`, `renderPlot({})`, and
+`renderText({})`, we're not telling R to do this or that. Instead, we're
+describing how to do something and let R decide when to do it or if to do it 
+at all.
+
+## A moment of clarity
+
+There is a difference between telling Shiny *to do* something, and telling Shiny
+*how to do* something. 
+
+### Maxim
+
+There is a difference between telling people *to do* something, and showing 
+people *how to do* something. 
+
+### Corollary 1
+
+The next time someone tells you to do something, ask *how*. 
+
+### Corollary 2
+
+Ignore the people who always tell you *what to do* but can't show you *how to do* it. 
+
+## Really understand reactivity
+
+Let's consider a very basic app.
+
+Run <font color="blue">examples/04-reactivity-show-number.R</font>. 
+
+Here's the server logic. It just shows the input number on the screen.
+
+```{r, eval=FALSE}
+server <- function(input, output) {
+        output$text <- renderText({
+                print(input$a)
+        })
+}
+```
+
+How does this work under the hood?
+
+## How do you print the value of a variable in R?
+```{r, eval=FALSE}
+a = 50
+print(a)
+
+a = 75 # this action makes print(a) "out of date"
+```
+
+After a is printed,  it's given a new value of 75, how do you print this new value of a?
+
+## Call `print(a)` again.
+
+In general, an expression is called **out of date** if one or more objects in the 
+expression has been given a new value since the expression was last called. To 
+**update** an out-of-date expression is easy, just re-run the expression. This is 
+just standard R stuff, not reactivity.
+
+In theory, we don't need shiny. We can build the app from ground zero by 
+continuously re-running every expression in the app. Information are **pulled**
+from the input instead of **pushed** to the output. For example, `print(input$a)` 
+learns the new value of `input$a` because the server re-runs `print(input$a)`, 
+not because the new value is magically pushed into output.
+
+In practice, this approach will quickly slow down your app and make it unresposive.
+
+## The key to reactivity
+
+> Shiny solves this problem by creating a **system of alerts** that lets the server know when an expression becomes **out of date**. The server still checks in on your app every few microseconds, but instead of re-running each expression each time, it only runs the expressions that the alert system has flagged as **out of date**. If no alerts have appeared, the server does not have to run anything at all. It can rest until the next check. If alerts have appeared, the server runs all of the expressions that are **out of date** at that moment, an event known as a **flush**.
+> 
+> <cite>[How to understand reactivity in R](https://shiny.rstudio.com/articles/understanding-reactivity.html)
+
+
+## Alerts are like carrier pigeons
+
+<img src="img/pigeon1.png" alt="" style="width: 100%;"/>
+
+<font size=2>credit: [Rstudio](https://shiny.rstudio.com/articles/understanding-reactivity.html)</font>
+
+## 
+
+<img src="img/pigeon2.png" alt="" style="width: 100%;"/>
+
+<font size=2>credit: [Rstudio](https://shiny.rstudio.com/articles/understanding-reactivity.html)</font>
+
+## 
+
+<img src="img/pigeon3.png" alt="" style="width: 100%;"/>
+
+<font size=2>credit: [Rstudio](https://shiny.rstudio.com/articles/understanding-reactivity.html)</font>
+
+
+## Revisit Fibonacci Fast Version
+
+Will this work? Why and why not?
+
+```{r, eval=FALSE}
+server <- function(input, output) {
+        ###<b>
+        current_fib <- fib(input$n)
+        ###</b>
+        output$nth_fib <- renderText({ current_fib() })
+        output$nth_fib_inv <- renderText({ 1 / current_fib() })
+}
+```
+
+- Let's find out. Run <font color="blue">examples/05-reactivity-fib-fast-revisit.R</font>. 
+- Read the error message.
+- We forgot to tell Shiny this is a recipe. To fix, wrap `fit(input$n)` inside of 
+`reactive({})`: `current_fib <- reactive({ fib(input$n) })`.
+
+
+## Exercise 1
+
+Open <font color="blue">exercises/04-reactivity-01.R</font>. 
+
+Task: re-write server logic to make sure that `head()` is only run once for each
+change to `input$nrows`.
+
+>- 5 minutes
+
+<font size=2>credit: [Joe Cheng](https://www.rstudio.com/resources/videos/effective-reactive-programming/)</font>
+
+## Solution
+
+```{r, eval=FALSE}
+server <- function(input, output) {
+        ###<b>
+        df <- reactive({
+                head(cars, input$nrows)
+        })
+        ###</b>
+        
+        output$plot <- renderPlot({
+                plot(df())
+        })
+        
+        output$table <- renderTable({
+                df()
+        })
+}
+```
+
+- How many of you get something like this?
+- Any of you did something different?
+
+## Exercise 2
+
+Open <font color="blue">exercises/04-reactivity-02.R</font>. 
+
+Run it and it works. The problem is that each of the 4 outputs contains 
+copied-and-pasted logic for selecting your chosen variables, and for building
+the model. 
+
+Task: Can you refactor the code so it's more efficient and maintainable?
+
+>- 10 minutes
+
+<font size=2>credit: [Joe Cheng](https://www.rstudio.com/resources/videos/effective-reactive-programming/)</font>
+
+
+## Solution
+
+```{r, eval=FALSE}
+selected <- reactive({
+        iris[, c(input$xcol, input$ycol)]
+})
+
+model <- reactive({
+        lm(paste(input$ycol, "~", input$xcol), selected())
+})
+```
+
+- How many of you get something like this?
+- Any of you did something different?
+
+## You can chain reactive expressions!
+```{r, eval=FALSE}
+###<b>
+selected <- reactive({
+        iris[, c(input$xcol, input$ycol)]
+})
+###</b>
+
+model <- reactive({
+        lm(paste(input$ycol, "~", input$xcol), 
+           ###<b>
+           selected()
+           ###</b>
+           )
+})
+```
+
 
 
 
