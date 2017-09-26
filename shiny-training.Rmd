@@ -592,7 +592,7 @@ server <- function(input, output) {
 }
 ```
 
-- How many of you get something like this?
+- How many of you got something like this?
 - Any of you did something different?
 
 ## Exercise 2
@@ -622,7 +622,7 @@ model <- reactive({
 })
 ```
 
-- How many of you get something like this?
+- How many of you got something like this?
 - Any of you did something different?
 
 ## You can chain reactive expressions!
