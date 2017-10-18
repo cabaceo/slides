@@ -3,7 +3,7 @@ title: Shiny Workshop
 author: "Harry Hua, Binqi Ye and Guangming Lang (mailto:gmlang@cabaceo.com)"
 date: "\\ BI China — October 19, 2017"
 output: 
-  revealjs::revealjs_presentation:
+   revealjs::revealjs_presentation:
     center: yes
     css: slides.css
     self_contained: yes
@@ -17,9 +17,9 @@ output:
 ## Outline
 
 > - 10 Minutes: Intro, setup and usecases
-> - 50 Minutes: Shiny fundamentals 
+> - 55 Minutes: Shiny fundamentals
+> - 15 Minutes: Shiny layouts
 > - 70 Minutes: Reactive programming
-> - 10 Minutes: Shiny layouts
 > - 40 Minutes: Shiny modules
 
 ## Intro
@@ -277,6 +277,68 @@ Currently, BI central RShiny is using a temporary server
 <img src="img/deploy.png" alt="" style="width: 80%;"/>
 
 
+## Shiny layout
+
+## Layout Functions
+
+> - `fluidRow()`
+> - `column()`
+
+## `fluidRow()`
+
+<img src="img/layout-fluidRow.png" alt="" style="width: 100%;"/>
+
+<font size=2>credit: [Garrett Grolemund](https://www.rstudio.com/resources/webinars/how-to-start-with-shiny-part-3/)</font>
+
+## `column()`
+
+<img src="img/layout-column.png" alt="" style="width: 100%;"/>
+
+<font size=2>credit: [Garrett Grolemund](https://www.rstudio.com/resources/webinars/how-to-start-with-shiny-part-3/)</font>
+
+## Example
+
+```r
+fluidRow(
+        column(width = 4, 
+               textInput("name", 
+                         label = "Enter your name:", 
+                         value = "Harry")
+        ),
+        column(width = 6,
+               textInput("title", 
+                         label = "Enter your job title:", 
+                         value = "Senior Biostatistician")
+        )       
+)
+```
+
+##
+
+```r
+fluidRow(
+        column(width = 4, offset = 8,
+               selectInput("hobby", 
+                           "Choose your hobbies:", 
+                           choices = c('Reading', 'Singing', 
+                                       "Watching Movies", "Swimming", 
+                                       "Dancing", "Running", 
+                                       "Working out", "Photography"),
+                           multiple = T,
+                           selected = c("Reading", "Swimming")
+                )
+        )
+)
+```
+
+## Include the theme 
+
+If you know some css and js, you can do something fancy with shiny.
+
+<img src="img/struct-complex-example.png" alt="" style="width: 100%;"/>
+
+
+
 
 ## Reactive Programming
 
@@ -284,21 +346,13 @@ Currently, BI central RShiny is using a temporary server
 
 ## Exercise
 
-Let's start with an exercise. Open the <font color="blue">04-reactivity-00.R</font> 
-file under the `/exercises` folder. Your task is to complete the server function
-so that the app shows a simple plot of the 1st nrows of `cars`, a built-in data
-frame. Let me run the app so that you see how it works. 
-
-**Run** <font color="blue">solutions/04-reactivity-00.R</font>. 
-
-We see as we change the number of rows, the scatter plot updates accordingly.
-This is what we call **reactivity**. Go ahead start. You have 2 minutes.
+>- Open the file <font color="blue">exercises/04-reactivity-00.R</font>
+>- Complete the server function so the app plots the first nrows of `cars`. So basically, make the Shiny equivalent of `plot(head(cars, nrows))`.
+> - 2 minutes
 
 <font size=2>credit: [Joe Cheng](https://www.rstudio.com/resources/videos/effective-reactive-programming/)</font>
 
 ## Solution
-
-Ok. Time is up. Raise your hand if you get something like this.
 
 ```r
 output$plot <- renderPlot({
@@ -306,23 +360,13 @@ output$plot <- renderPlot({
 })
 ```
 
-Congratulations! You've just implemented reactivity. Workshop is over and you 
-all can go to dinner now. Yeah, I wish reactivity is that simple. Unfortunately,
-it's not, so we'll have to work harder. But the payoff will be huge as reactivity is the single most important piece of shiny. When you make a complex shiny app 
-that works but works very slowly, 99% of the time it's because you didn't 
-implement reactivity correctly. 
-
 ## Reactive Sources and Endpoints
 
-Let's break down the solution we just saw and learn some reactive terms.
-
-`input$nrows` plays the role of source, and it's implemented in R by something 
-called Reactive value. Reactive values implement reactive sources.
-
-`output$plot` plays the role of endpoint, and it's implemented in R by something
-called Observer, specifically, `renderPlot`. Observers implement reactive endpoints.
-
-The example here has the simplest structure of a reactive program involves just a source and an endpoint.
+```r
+output$plot <- renderPlot({
+        plot(head(cars, input$nrows))
+})
+```
 
 |           |Role             |Implementation (R)         |
 |-----------|-----------------|---------------------------|
@@ -332,36 +376,10 @@ The example here has the simplest structure of a reactive program involves just 
 
 ## Example: Fibonacci
 
-Let's look at another example. This app finds the nth Fibonacci number and its 
-inverse. I have two implementations. Both are pretty slow because they use 
-recursion. But one is slower than the other because it didn't implement 
-reactivity correctly.
-
-The default example is to find the 32nd fibnacci number. Let me show them and record the time.
-
-** SKIP WHEN NO TIME **
-
-Let's first run the slower version. 
-
-**Run** <font color="blue">examples/03-reactivity-fibonacci-slow.R</font>. 
-
-Let's run the faster version. 
-
-**Run** <font color="blue">examples/03-reactivity-fibonacci-fast.R</font>. 
-
-<font size=2>credit: [Reactivity - An overview](https://shiny.rstudio.com/articles/reactivity-overview.html)</font>
-
-** SKIP WHEN NO TIME **
-
-What leads to the difference?
+This app finds the nth Fibonacci number and its inverse. I have two implementations. Both are pretty slow because they use recursion. But one is 
+slower than the other because it didn't implement reactivity correctly.
 
 ## Slower Version
-
-Let's look at the slower version in detail. `fib()` is the recursive 
-function for calculating the nth Fibonacci number. Notice we pass the source
-`input$n` into `fib()` twice. We also used the observer `renderText({})`
-twice and directed the rendered text to the endpoints `output$nth_fib`
-and `output$nth_fib_inv` respectively.
 
 ```r
 server <- function(input, output) {
@@ -374,13 +392,6 @@ Running the recursive function `fib()` twice makes the app very inefficient.
 
 ## Faster Version
 
-Let's now look at the faster version in detail. Notice we pass the source
-`input$n` into `fib()` only once here. And we put `fib(input$n)`
-inside of `reactive({})`. `reactive({})` is a **reactive expression**. It caches 
-the value returned by `fib()` so that no matter how many times `current_fib()` 
-is called, as long as `input$n` doesn't change, it'll simply look up the 
-value instead of calling `fib()` to re-compute it. Please note that when calling `current_fib()`, you should add parenthesis behind it. 
-
 ```r
 server <- function(input, output) {
         # only run fib() once
@@ -390,16 +401,9 @@ server <- function(input, output) {
         output$nth_fib_inv <- renderText({ 1 / current_fib() })
 }
 ```
+The amount of computation is reduced by adding a reactive conductor `current_fib()` in between the source and endpoints. The reactive expression `reactive({})` caches the value returned by `fib()` to make the app run more efficient.
 
 ## Terminologies Table
-
-We can now complete the table of reactive terminologies. There are three kinds
-of objects in reactive programming: reactive sources, reactive conductors, and
-reactive endpoints. 
-
-Their implementations are reactive values, reactive expressions, and observers, respectively.
-
-The information flows from a source to an endpoint, and you can have multiple conductors in between.
 
 |Role              |Implementation (R) |
 |------------------|-------------------|
@@ -407,14 +411,10 @@ The information flows from a source to an endpoint, and you can have multiple co
 |Reactive conductor|Reactive expression|
 |Reactive endpoint |Observer           |
 
+Source -> Conductor1 -> Conductor2 ... -> Endpoint
+
 
 ## Reactive Expression vs. Observer
-
-Here're some examples of reactive expressions and observers. A reactive 
-expression always returns a value. An observer never returns a value, 
-instead, it performs side effects. For example, `render*({})` expressions make objects to display in web browser. This is a key difference between reactive 
-expressions and observers. Think of the difference between pure functions and 
-functions with side effects only such as `print()`. 
 
 |             |Reactive Expression |Observer             |
 |-------------|--------------------|---------------------|
@@ -424,14 +424,12 @@ functions with side effects only such as `print()`.
 |             |                    |`renderDataTable({})`|
 |             |                    |...                  |
 
+> - Reactive expression: always returns a value
+> - Observer: never returns any values, instead, performs side effects, e.g., `render*({})` expressions make objects to display
 
 ## Exercise 1
 
-Ok. Let's do an exercise. 
-
 Open <font color="blue">exercises/04-reactivity-01.R</font>
-
-Your task is to 
 
 Re-write the server logic to ensure `head()` is only run once for every
 change to `input$nrows`.
@@ -441,10 +439,6 @@ change to `input$nrows`.
 <font size=2>credit: [Joe Cheng](https://www.rstudio.com/resources/videos/effective-reactive-programming/)</font>
 
 ## Solution
-
-How many of you get something like this? Any of you did something different?
-
-We pass the sourse `input$nrows` into `head()` function, and put it inside of `reactive({})` expression. Later the conductor `df()` is called twice, but the `head()` function runs only once. Two endpoints are created through `renderPlot({})` and `renderTable({})` respectively.
 
 ```r
 server <- function(input, output) {
@@ -465,8 +459,6 @@ server <- function(input, output) {
 
 ## Exercise 2
 
-Let's do another exercise. 
-
 Open <font color="blue">exercises/04-reactivity-02.R</font>
 
 Run it and it works. The problem is that each of the 4 outputs contains 
@@ -479,9 +471,7 @@ the model. Can you refactor the code so it's more efficient and maintainable?
 
 ## Solution
 
-How many of you get something like this? Any of you did something different?
-
-```r
+```{r, eval=FALSE}
 selected <- reactive({
         iris[, c(input$xcol, input$ycol)]
 })
@@ -491,19 +481,8 @@ model <- reactive({
 })
 ```
 
-Let's look at the solution. It shows how we can chain reactive conductors.
-Notice `selected()` is a conductor (implemented by a reactive expression). And we used `selected()` inside another reactive expression. 
-
 
 ## How does reactivity work?
-
-So far, we've only scratched the surface. Let's dive deeper to really understand
-how reactivity works. Let's start with a very basic app.
-
-**Run** <font color="blue">examples/04-reactivity-show-number.R</font>. 
-
-Here's the server logic. We see it just prints the input number on the screen.
-So how does it work under the hood?
 
 ```r
 server <- function(input, output) {
@@ -513,13 +492,7 @@ server <- function(input, output) {
 }
 ```
 
-
 ## `print()`
-
-First, let's look at the following R code. We give the variable `a` a value of 
-50 and then run `print(a)`. Afterwards, we change `a` to 75. This makes the 
-expression `print(a)` **out of date**. To update it (a fancier way of saying 
-"print a again"), we just re-run `print(a)`.
 
 ```r
 a = 50
@@ -531,36 +504,9 @@ a = 75 # this action makes print(a) "out of date"
 print(a)
 ```
 
-## 
-
-In general, an expression is called **out of date** if one or more objects in the 
-expression has been given a new value since the expression was last called. To 
-**update** an out-of-date expression is easy, just re-run the expression. This is 
-just standard R stuff, not reactivity.
-
-So in theory, we don't need shiny. We can build the app from ground zero by 
-continuously re-running every expression in the app. Information are **pulled**
-from the input instead of **pushed** to the output. For example, `print(input$a)` 
-learns the new value of `input$a` because the server re-runs `print(input$a)`, 
-not because the new value is magically pushed into output.
-
-In practice, this approach will quickly slow down your app and eventually make it unresposive.
-
-## 
-
-Shiny solves this problem by creating a **system of alerts** that lets the 
-server know when an expression becomes out of date. The server checks in on 
-your app every few microseconds. That's why your R session becomes busy when you launch a shiny app. But instead of re-running every expression, it 
-only runs the out-of-date ones. If no alerts have appeared, the server doesn't have to run anything and just rests until the next check. 
-
-<font size=2>credit: [How to understand reactivity in R](https://shiny.rstudio.com/articles/understanding-reactivity.html)</font>
-
-
 ## Systym of Alert
 
-ALerts are like carrier pigeons. Basically, you can take a carrier pigeon anywhere and when you release it, it will always fly back home. We are going to use a pigeon to deliver message to the server.
-
-When `a` equals to 50 and get printed, it creates an alert to re-run `print(a)`. The alert is like a pigeon. When `a` stays as 50, it simply holds the pigeon.
+ALerts are like carrier pigeons.
 
 <img src="img/pigeon1.png" alt="" style="width: 100%;"/>
 
@@ -568,15 +514,11 @@ When `a` equals to 50 and get printed, it creates an alert to re-run `print(a)`.
 
 ## 
 
-When `a` changes to 75, it releases the pigeon to the server to deliver the message "re-run `print(a)`". The alert is stacked in the server. In the next time, the server will detect the alert and re-run the associated expression.
-
 <img src="img/pigeon2.png" alt="" style="width: 100%;"/>
 
 <font size=2>credit: [Rstudio](https://shiny.rstudio.com/articles/understanding-reactivity.html)</font>
 
 ## 
-
-After finishing the re-running, the cycle is ready to repeat itself.
 
 <img src="img/pigeon3.png" alt="" style="width: 100%;"/>
 
@@ -585,13 +527,6 @@ After finishing the re-running, the cycle is ready to repeat itself.
 
 ## Prevent reactivity with isolate()
 
-We've seen how reactivity works. What if you want to prevent it? For example, let's take a look at our hello-world example again. 
-
-**Run** <font color="blue">examples/05-reactivity-NONE.R</font>.
-
-As you can see, no matter what I put in the box, the app doesn't show it
-anymore. This is accomplished by `isolate()`. You simply wrap `isolate()` around `input$my_name`, and then the app will stop reacting to users' actions.
-
 ```r
 output$self_intro = renderText({
         paste("My name is", isolate(input$my_name))      
@@ -599,15 +534,6 @@ output$self_intro = renderText({
 ```
 
 ## Trigger code with observeEvent()
-
-The entire point of preventing reactivity is to give users more control, for example, we can make a button and when a user clicks it, the app will react.
-
-**Run** <font color="blue">examples/05-reactivity-w-button.R</font>.
-
-Notice I used `actionButton()` in the UI and gave it an id of `"btn"`. I then
-pass it (`input$btn`) as the first argument into `observeEvent()`. Also notice
-I used `isolate()` around `input$bins` to prevent the app automatically update
-when user changes bins but not yet clicked on the button.
 
 ```r
 ui <- fluidPage(
@@ -624,6 +550,7 @@ server <- function(input, output) {
         })
 }
 ```
+Through `actionButton()` users gain more control and can decide when the app should react.
 
 ## You now know
 
@@ -632,94 +559,6 @@ server <- function(input, output) {
 > - How to code reactivity?
 > - How to prevent reactivity?
 
-## Shiny layout
-
-## Layout Functions
-
-We can use layout functions to position elements. There're really 2 of them you should remember:
-
-> - `fluidRow()`
-> - `column()`
-
-## `fluidRow()`
-
-`fluidRow()` adds rows to the grid. Each new row goes below the previous rows.
-
-<img src="img/layout-fluidRow.png" alt="" style="width: 100%;"/>
-
-<font size=2>credit: [Garrett Grolemund](https://www.rstudio.com/resources/webinars/how-to-start-with-shiny-part-3/)</font>
-
-## `column()`
-
-`column()` adds columns within a row. Each new column goes to the right of the previous column. Specify the width and offset of each column out of 12.
-
-<img src="img/layout-column.png" alt="" style="width: 100%;"/>
-
-<font size=2>credit: [Garrett Grolemund](https://www.rstudio.com/resources/webinars/how-to-start-with-shiny-part-3/)</font>
-
-## Example
-
-Let's look at an example.
-
-**Run** <font color="blue">examples/02-layout-function-example.R</font>
-
-I've extracted the key pieces of code here. Notice how I stack columns inside
-of `fluidRow()` and how I used the `width` argument inside of `column()`.
-
-```r
-fluidRow(
-        column(width = 4, 
-               textInput("name", 
-                         label = "Enter your name:", 
-                         value = "Harry")
-        ),
-        column(width = 6,
-               textInput("title", 
-                         label = "Enter your job title:", 
-                         value = "Senior Biostatistician")
-        )       
-)
-```
-
-##
-
-Notice how I used the `offset` argument inside of `column()`.
-
-```r
-fluidRow(
-        column(width = 4, offset = 8,
-               selectInput("hobby", 
-                           "Choose your hobbies:", 
-                           choices = c('Reading', 'Singing', 
-                                       "Watching Movies", "Swimming", 
-                                       "Dancing", "Running", 
-                                       "Working out", "Photography"),
-                           multiple = T,
-                           selected = c("Reading", "Swimming")
-                )
-        )
-)
-```
-
-## Include CSS and Javascript
-
-If you know some css and js, you can do something fancy with shiny. Always put your logo (.png or .jpeg) and css (.css) files inside the subfolder `/www`.
-
-<img src="img/struct-complex-example.png" alt="" style="width: 100%;"/>
-
-## 
-
-Let's look at an app styled with css and js. 
-
-**Run** <font color="blue">examples/02-output-data-table/ui.R</font>
-
-We see the app looks better. This is because we used a theme. Themes are like 
-make-ups and clothing. They make your shiny app look nice. If you know CSS, 
-you can create your own theme. The 1st tab shows the first 15 rows of the iris data in table format, and it allows you to paginate through the data. The 2nd tab shows all data on one page. Try to search 3.5 and see what you get. The 3rd tab removes the search box and shows only the first 10 rows. The 4th tab uses javascript to change the color of a number to yellow if it's >= 5.
-
-Ask students to read the code themselves as homework. 
-
-## Break (2 mins)
 
 ## Shiny Modules
 
